@@ -60,7 +60,6 @@ fn generate_file (size: i32, file_name: String) {
     write!(file, "{} ", num).ok().expect("Error in writing");
   }
 }
-
 fn main() {
   
   generate_file(3, "file.txt".to_string());
@@ -68,7 +67,9 @@ fn main() {
   let mut m: Matrix = Matrix::new(3, 3);
   let q = parse_file(&mut m, "file.txt".to_string());
 
-  m.read_elements(q);
+  m.read_elements(&q);
   m.swap_elements(30);
+
+  m.read_elements(&q);
   m.print();  
 }

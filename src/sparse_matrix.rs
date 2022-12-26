@@ -45,19 +45,7 @@ pub mod sparse_matrix {
           }
         }
     
-        fn set_matrix(&mut self) {
-          self.matrix = vec![vec![0; self.columns]; self.rows];
-    
-          if self.elements.len() > 0{
-            for i in 0..self.elements.len() {
-              if self.elements[i].row < self.rows && self.elements[i].column < self.columns {
-                self.matrix[self.elements[i].row][self.elements[i].column] = self.elements[i].value;
-              }
-            }
-          }
-        }
-    
-        pub fn read_elements(&mut self, arr: Vec<Element>) {
+        pub fn read_elements(&mut self, arr: &Vec<Element>) {
           while self.elements.len() > 0 {
             self.elements.pop().unwrap();
           }
@@ -66,9 +54,28 @@ pub mod sparse_matrix {
             let element = Element{row: arr[i].row, column: arr[i].column, value: arr[i].value};
             self.elements.push(element);
           }
-          self.set_matrix();
+          self.update_matrix();
         }
-    
+        
+        pub fn displace_elements(&mut self) {
+          for i in 0..self.elements.len() {
+            if self.elements[i].column == self.columns - 1 && self.elements[i].row == self.rows - 1 {
+                self.elements[i].column = 0;
+                self.elements[i].row = 0;
+                continue;
+            }
+            if self.elements[i].column == self.columns - 1 {
+              self.elements[i].column = 0;
+              self.elements[i].row += 1;
+              continue;
+            }
+            if self.elements[i].column < self.columns - 1 {
+              self.elements[i].column += 1;
+              continue;
+            }
+          }
+        }
+
         pub fn swap_elements(&mut self, number: i16) {
           let mut bigger: Queue<&Element> = Queue::new();
           let mut less: Queue<&Element> = Queue::new();
@@ -98,9 +105,22 @@ pub mod sparse_matrix {
               }
             }
           }
-          self.read_elements(arr);
-          self.set_matrix();
+          self.read_elements(&arr);
+          self.update_matrix();
         }
+
+        fn update_matrix(&mut self) {
+          self.matrix = vec![vec![0; self.columns]; self.rows];
+    
+          if self.elements.len() > 0{
+            for i in 0..self.elements.len() {
+              if self.elements[i].row < self.rows && self.elements[i].column < self.columns {
+                self.matrix[self.elements[i].row][self.elements[i].column] = self.elements[i].value;
+              }
+            }
+          }
+        }
+
       }
     
     }
